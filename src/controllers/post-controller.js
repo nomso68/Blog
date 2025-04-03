@@ -35,3 +35,20 @@ exports.fetchAllPosts = async (req, res) => {
     res.send("Don't expect any posts because an error has occurred");
   }
 };
+
+exports.updatePost = async (req, res) => {
+  try {
+    let allPosts = await Posts.findByIdAndUpdate(req.body.id);
+  } catch (err) {
+    console.log(err);
+    res.send("An error has occurred");
+  }
+};
+
+exports.deletePost = async (req, res) => {
+  try {
+  } catch (err) {
+    console.log(err);
+    res.send("An error has occurred");
+  }
+};
