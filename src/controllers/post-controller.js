@@ -22,10 +22,7 @@ exports.createPost = async (req, res) => {
 // GET ALL POSTS
 exports.fetchAllPosts = async (req, res) => {
   try {
-    let allPosts = await Posts.find(
-      { deleted: false || undefined },
-      "title category"
-    );
+    let allPosts = await Posts.find({ deleted: { $in: [false, null] } });
     res.send(allPosts);
   } catch (err) {
     console.log(err);
@@ -43,7 +40,7 @@ exports.fetchPostById = async (req, res) => {
       let singlePost = await Posts.findOne(
         {
           _id: req.body.id,
-          deleted: false || undefined,
+          deleted: { $in: [false, null] },
         },
         "title category"
       );
@@ -61,6 +58,7 @@ exports.fetchPostById = async (req, res) => {
   }
 };
 
+// UPDATE POST
 exports.updatePost = async (req, res) => {
   try {
     let isValid = mongoose.Types.ObjectId.isValid(req.body.id);
@@ -68,7 +66,7 @@ exports.updatePost = async (req, res) => {
       return res.status(400).send("Invalid ID format");
     } else {
       let updatedPosts = await Posts.findOneAndUpdate(
-        { _id: req.body.id, deleted: false || undefined },
+        { _id: req.body.id, deleted: { $in: [false, null] } },
         {
           title: req.body.title,
           category: req.body.category,
@@ -83,6 +81,7 @@ exports.updatePost = async (req, res) => {
   }
 };
 
+// DELETE POST
 exports.deletePost = async (req, res) => {
   try {
     let isValid = mongoose.Types.ObjectId.isValid(req.params.id);
@@ -90,7 +89,7 @@ exports.deletePost = async (req, res) => {
       return res.status(400).send("Invalid ID format");
     } else {
       let deletedPost = await Posts.findOneAndUpdate(
-        { _id: req.params.id, deleted: false || undefined },
+        { _id: req.params.id, deleted: { $in: [false, null] } },
         { deleted: true },
         { new: true, fields: "title category" }
       );
@@ -99,5 +98,28 @@ exports.deletePost = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.send("An error has occurred");
+  }
+};
+
+// FETCH POSTS BY USERS
+exports.fetchPostByUsers = async (req, res) => {
+  try {
+    let allPOstsByUser = await Posts.find(
+      { deleted: { $in: [false, null] } },
+      "title category body author"
+    );
+  } catch (err) {
+    res.send("err");
+  }
+};
+
+exports.fetchAllPostsWithAuthor = async (req, res) => {
+  try {
+    let allPosts = await Posts.find({
+      // deleted: { $in: [false, null] }
+    }).populate("author");
+    res.send(allPosts);
+  } catch (err) {
+    res.send("err");
   }
 };

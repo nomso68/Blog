@@ -8,6 +8,7 @@ userRouter.get("/", (req, res) => {
 });
 
 userRouter.get("/fetchAllUsers", UserController.fetchAllUsers);
+userRouter.get("/posts/:userId", UserController.fetchUserBlogPosts);
 userRouter.post("/signUp", UserController.createNewUser);
 userRouter.post("/login", UserController.logUserIn);
 

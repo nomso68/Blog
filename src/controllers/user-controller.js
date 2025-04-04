@@ -1,11 +1,12 @@
 const Users = require("../models/users");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 
 exports.fetchAllUsers = async (req, res) => {
   try {
     let allUsers = await Users.find(
-      { deleted: false || undefined },
+      { deleted: { $in: [false, null] } },
       "firstName lastName phoneNumber emailAddress"
     );
     res.send(allUsers);
@@ -43,7 +44,7 @@ exports.logUserIn = async (req, res) => {
   try {
     let { email, password } = req.body;
     let singleUser = await Users.findOne(
-      { email: req.body.email, deleted: false || undefined },
+      { email: req.body.email, deleted: { $in: [false, null] } },
       { __v: 0, deleted: 0 }
     );
     if (!singleUser) {
@@ -66,5 +67,21 @@ exports.logUserIn = async (req, res) => {
     }
   } catch (err) {
     res.send("We could not log you in");
+  }
+};
+
+exports.fetchUserBlogPosts = async (req, res) => {
+  try {
+    let isValid = mongoose.Types.ObjectId.isValid(req.params.userId);
+    if (isValid) {
+      let userPosts = await Users.findOne({ _id: req.params.userId }).populate(
+        "posts"
+      );
+      res.send(userPosts);
+    } else {
+      return res.status(400).send("Invalid ID format");
+    }
+  } catch (err) {
+    res.send(err);
   }
 };
