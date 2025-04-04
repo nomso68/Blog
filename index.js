@@ -7,7 +7,7 @@ const appRouter = require("./src/app");
 
 dotenv.config();
 const app = express();
-// connectToDB();
+connectToDB();
 app.use(express.json());
 app.use("/api/v1", appRouter);
 
@@ -59,119 +59,119 @@ app.use("/api/v1", appRouter);
 //   }
 // });
 
-function processBlogs(data) {
-  if (typeof data === "array") {
-    return data
-      .filter((blog) => blog.deleted === false)
-      .map(({ deleted, ...rest }) => rest); // Exclude the 'deleted' field
-  } else if (typeof data === "object") {
-    return { ...data, deleted: undefined }; // Exclude the 'deleted' field
-  }
-}
+// function processBlogs(data) {
+//   if (typeof data === "array") {
+//     return data
+//       .filter((blog) => blog.deleted === false)
+//       .map(({ deleted, ...rest }) => rest); // Exclude the 'deleted' field
+//   } else if (typeof data === "object") {
+//     return { ...data, deleted: undefined }; // Exclude the 'deleted' field
+//   }
+// }
 
 // app.get("/", (req, res) => {
 //   res.send("Welcome to our home route");
 // });
 
-app.get("/fetchAllBlogs", (req, res) => {
-  let allBlogs = JSON.parse(fs.readFileSync("./database.json", "utf-8"));
-  let processedBlogs = allBlogs
-    .filter((blog) => blog.deleted === false)
-    .map(({ deleted, ...rest }) => rest); // Exclude the 'deleted' field
-  res.json({
-    status: 200,
-    success: true,
-    data: processedBlogs,
-  });
-});
+// app.get("/fetchAllBlogs", (req, res) => {
+//   let allBlogs = JSON.parse(fs.readFileSync("./database.json", "utf-8"));
+//   let processedBlogs = allBlogs
+//     .filter((blog) => blog.deleted === false)
+//     .map(({ deleted, ...rest }) => rest); // Exclude the 'deleted' field
+//   res.json({
+//     status: 200,
+//     success: true,
+//     data: processedBlogs,
+//   });
+// });
 
-app.get("/fetchBlog/:id", (req, res) => {
-  let id = Number(req.params.id);
-  let allBlogs = JSON.parse(fs.readFileSync("./database.json", "utf-8"));
+// app.get("/fetchBlog/:id", (req, res) => {
+//   let id = Number(req.params.id);
+//   let allBlogs = JSON.parse(fs.readFileSync("./database.json", "utf-8"));
 
-  let blog = allBlogs.find((blog) => blog.id === id);
-  if (!blog) {
-    return res.json({
-      status: 404,
-      success: false,
-      message: "Blog not found",
-    });
-  }
+//   let blog = allBlogs.find((blog) => blog.id === id);
+//   if (!blog) {
+//     return res.json({
+//       status: 404,
+//       success: false,
+//       message: "Blog not found",
+//     });
+//   }
 
-  // Exclude the 'deleted' field from the response
-  if (blog.deleted) {
-    return res.json({
-      status: 404,
-      success: false,
-      message: "Blog not found",
-    });
-  }
+//   // Exclude the 'deleted' field from the response
+//   if (blog.deleted) {
+//     return res.json({
+//       status: 404,
+//       success: false,
+//       message: "Blog not found",
+//     });
+//   }
 
-  res.json({
-    status: 200,
-    success: true,
-    data: processBlogs(blog),
-  });
-});
+//   res.json({
+//     status: 200,
+//     success: true,
+//     data: processBlogs(blog),
+//   });
+// });
 
-app.post("/saveNewBlog", (req, res) => {
-  let allBlogs = JSON.parse(fs.readFileSync("./database.json", "utf-8"));
-  req.body.id = allBlogs.length + 1;
-  req.body.deleted = false;
-  req.body.createdAt = new Date().toISOString();
-  // processedBlogs.push({
-  //   title: "My new blog",
-  //   description: "This is my new blog",
-  // });
-  allBlogs.push(req.body);
-  fs.writeFileSync("./database.json", JSON.stringify(allBlogs, null, 2));
-  res.json({
-    status: 200,
-    success: true,
-    data: processBlogs(allBlogs),
-  });
-});
-app.delete("/deleteBlog", (req, res) => {
-  let allBlogs = JSON.parse(fs.readFileSync("./database.json", "utf-8"));
-  let id = req.body.id;
-  let index = allBlogs.findIndex((blog) => blog.id === id);
-  if (index === -1) {
-    return res.json({
-      status: 404,
-      success: false,
-      message: "Blog not found",
-    });
-  }
-  allBlogs[index].deleted = true;
-  fs.writeFileSync("./database.json", JSON.stringify(allBlogs, null, 2));
-  res.json({
-    status: 200,
-    success: true,
-    data: processBlogs(allBlogs),
-  });
-});
+// app.post("/saveNewBlog", (req, res) => {
+//   let allBlogs = JSON.parse(fs.readFileSync("./database.json", "utf-8"));
+//   req.body.id = allBlogs.length + 1;
+//   req.body.deleted = false;
+//   req.body.createdAt = new Date().toISOString();
+//   // processedBlogs.push({
+//   //   title: "My new blog",
+//   //   description: "This is my new blog",
+//   // });
+//   allBlogs.push(req.body);
+//   fs.writeFileSync("./database.json", JSON.stringify(allBlogs, null, 2));
+//   res.json({
+//     status: 200,
+//     success: true,
+//     data: processBlogs(allBlogs),
+//   });
+// });
+// app.delete("/deleteBlog", (req, res) => {
+//   let allBlogs = JSON.parse(fs.readFileSync("./database.json", "utf-8"));
+//   let id = req.body.id;
+//   let index = allBlogs.findIndex((blog) => blog.id === id);
+//   if (index === -1) {
+//     return res.json({
+//       status: 404,
+//       success: false,
+//       message: "Blog not found",
+//     });
+//   }
+//   allBlogs[index].deleted = true;
+//   fs.writeFileSync("./database.json", JSON.stringify(allBlogs, null, 2));
+//   res.json({
+//     status: 200,
+//     success: true,
+//     data: processBlogs(allBlogs),
+//   });
+// });
 
-app.patch("/editBlog", (req, res) => {
-  let allBlogs = JSON.parse(fs.readFileSync("./database.json", "utf-8"));
-  let id = req.body.id;
-  let index = allBlogs.findIndex((blog) => blog.id === id);
-  if (index === -1) {
-    return res.json({
-      status: 404,
-      success: false,
-      message: "Blog not found",
-    });
-  }
-  allBlogs[index].title = req.body.title || allBlogs[index].title;
-  allBlogs[index].description =
-    req.body.description || allBlogs[index].description;
-  fs.writeFileSync("./database.json", JSON.stringify(allBlogs, null, 2));
-  res.json({
-    status: 200,
-    success: true,
-    data: processBlogs(allBlogs),
-  });
-});
+// app.patch("/editBlog", (req, res) => {
+//   let allBlogs = JSON.parse(fs.readFileSync("./database.json", "utf-8"));
+//   let id = req.body.id;
+//   let index = allBlogs.findIndex((blog) => blog.id === id);
+//   if (index === -1) {
+//     return res.json({
+//       status: 404,
+//       success: false,
+//       message: "Blog not found",
+//     });
+//   }
+//   allBlogs[index].title = req.body.title || allBlogs[index].title;
+//   allBlogs[index].description =
+//     req.body.description || allBlogs[index].description;
+//   fs.writeFileSync("./database.json", JSON.stringify(allBlogs, null, 2));
+//   res.json({
+//     status: 200,
+//     success: true,
+//     data: processBlogs(allBlogs),
+//   });
+// });
 
 const port = process.env.PORT;
 // server.listen(port, () => console.log("App listening at port " + port));

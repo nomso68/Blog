@@ -13,6 +13,14 @@ const PostsSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+    },
+    body: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
